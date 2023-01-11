@@ -2,26 +2,18 @@
 
 
 ## Installation
-Clone repo
+Clone repo and initialize submodule
 ```
 git clone https://github.com/albindgit/starworld_tunnel_mpc.git
-cd starworld_tunnel_mpc
+cd starworld_tunnel_mpc/starworlds
+git submodule init
+git submodule update
 ```
-
 Create and activate virtual environment
-
 ```
 python -m venv venv
 . venv/bin/activate
 ```
-
-Initialize submodule
-```
-cd starworlds
-git submodule init
-git submodule update
-```
-
 Install package
 ```
 pip install -e .
