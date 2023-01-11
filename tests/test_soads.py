@@ -3,11 +3,9 @@ import matplotlib.pyplot as plt
 # from config.load_config import load_config
 # from videos.video_writer import VideoWriter
 from motion_control.soads import SoadsController
-from config import load_config
+from config.load_config import load_config
 
 make_video = 0
-
-controller = SoadsController()
 
 ctrl_param_file = 'soads_ctrl_params.yaml'
 scene, robot, controller, x0 = load_config(ctrl_param_file=ctrl_param_file, robot_type_id=0)
@@ -43,8 +41,10 @@ ax_scene.set_ylabel('x2 [m]', fontsize=15)
 travelled_path_handle = ax_scene.plot([], [], 'k-', linewidth=2)[0]
 goal_handle = ax_scene.plot(*scene.pg, 'g*', markersize=16)[0]
 obstacle_handles, _ = scene.init_plot(ax=ax_scene, draw_p0=0, draw_pg=0, draw_streamlines=0, show_obs_name=0)
+scene.update_plot(obstacle_handles)
 robot.width = 0
 robot_handles, _ = robot.init_plot(ax=ax_scene, color='y', alpha=1, markersize=16)
+robot.update_plot(x0, robot_handles)
 obstacle_star_handles = []
 color_list = plt.cm.gist_ncar(np.linspace(0, 1, len(scene.obstacles)))
 

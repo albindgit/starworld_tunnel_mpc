@@ -57,9 +57,7 @@ class Scene:
         scene_id += 1
         if id == scene_id:
             self.obstacles = [
-                # Ellipse([1., 1.], motion_model=motion_model.Static(pos=[2., 0.])),
-                PolynomialObstacle(xys=0.2*(np.array([[0, 0], [10, 0], [10, 3], [4, 5], [10, 7], [10, 10], [0, 10], [0, 0]],
-                                                dtype=np.float64) + np.array([-2, -5])), pol_deg=40),
+                Ellipse([1., 1.], motion_model=motion_model.Static(pos=[2., 0.])),
             ]
             self.p0 = np.array([0., -2.])
             self.pg = np.array([2., 2.])
