@@ -1,0 +1,27 @@
+
+Omnidirectional:
+  model: 'Omnidirectional'
+  width: 0.5
+  vel_max: 1.5
+
+Unicycle_forward:
+  model: 'Unicycle'
+  width: 0.5
+  lin_vel_min: 0.
+  lin_vel_max: 1.5
+  ang_vel_max: 1.5
+
+Unicycle:
+  model: 'Unicycle'
+  width: 0.5
+  lin_vel_min: -0.5
+  lin_vel_max: 1.5
+  ang_vel_max: 1.5
+
+Bicycle:
+  model: 'Bicycle'
+  width: 0.5
+  steer_max: 1.0
+  lin_vel_min: -0.5
+  lin_vel_max: 1.5
+  steer_vel_max: 0.5

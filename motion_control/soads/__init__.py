@@ -1,0 +1,1 @@
+from .soads import f, SoadsController
