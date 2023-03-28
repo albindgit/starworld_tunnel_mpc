@@ -2,11 +2,13 @@ import yaml
 import pathlib
 from config.scene import Scene, scene_description
 from motion_control.soads import SoadsController
+from motion_control.tunnel_mpc import TunnelMpcController
+from motion_control.tunnel_mpc_convergence import TunnelMpcController as TunnelMpcControllerConvergence
 from robot import Unicycle, Omnidirectional, Bicycle
 import numpy as np
 
 
-def load_config(scene_id=None, robot_type_id=None, ctrl_param_file=None, all_convex_obstacles=False):
+def load_config(scene_id=None, robot_type_id=None, ctrl_param_file=None, all_convex_obstacles=False, verbosity=0):
     # Scene init
     if scene_id is None:
         print("Select scene ID\n -------------")
@@ -15,9 +17,11 @@ def load_config(scene_id=None, robot_type_id=None, ctrl_param_file=None, all_con
         scene_id = int(input("-------------\nScene ID: "))
     scene = Scene(scene_id, all_convex=all_convex_obstacles)
 
+    param_path = pathlib.PurePath(__file__).parents[0].joinpath('params')
+
     # Load robot
-    param_file = str(pathlib.PurePath(pathlib.Path(__file__).parent, 'robot_params.yaml'))
-    with open(r'' + param_file) as stream:
+    robot_param_path = str(param_path.joinpath('robot_params.yaml'))
+    with open(r'' + robot_param_path) as stream:
         params = yaml.safe_load(stream)
     if robot_type_id is None:
         print("Select robot ID\n -------------")
@@ -52,36 +56,24 @@ def load_config(scene_id=None, robot_type_id=None, ctrl_param_file=None, all_con
             x0 = np.append(scene.p0, [np.arctan2(scene.pg[1]-scene.p0[1], scene.pg[0]-scene.p0[0]), 0])
             # x0 = np.append(scene.p0, [np.arctan2(scene.pg[1]-scene.p0[1], scene.pg[0]-scene.p0[0])])
     else:
-        raise Exception('Invalid robot model.')
+        raise Exception("[Load Config]: Invalid robot model.\n"
+                        "\t\t\tSelection: {}\n"
+                        "\t\t\tValid selections: [Omnidirectional, Unicycle, Bicycle]".format(robot_params['model']))
 
     # Load control parameters
-    if ctrl_param_file is None:
-        ctrl_param_file = 'ctrl_params.yaml'
-    param_file = str(pathlib.PurePath(pathlib.Path(__file__).parent, ctrl_param_file))
-    with open(r'' + param_file) as stream:
+    ctrl_param_path = str(param_path.joinpath(ctrl_param_file))
+    # param_file = str(pathlib.PurePath(pathlib.Path(__file__).parent, ctrl_param_file))
+    with open(r'' + ctrl_param_path) as stream:
         params = yaml.safe_load(stream)
-
     if 'soads' in params:
-        # SoadsController
-        controller = SoadsController(params['soads'], robot)
-    # else:
-    #     # MPC controller
-    #     mpc_params = params['mpc']
-    #     target_generator_params = params['target_generator_params']
-    #     controller = MotionController(mpc_params, target_generator_params, robot)
+        controller = SoadsController(params['soads'], robot, verbosity)
+    elif 'tunnel_mpc' in params:
+        controller = TunnelMpcController(params['tunnel_mpc'], robot, verbosity)
+    elif 'tunnel_mpc_convergence' in params:
+        controller = TunnelMpcControllerConvergence(params['tunnel_mpc_convergence'], robot, verbosity)
+    else:
+        raise Exception("[Load Config]: No valid controller selection in param file.\n"
+                        "\t\t\tSelection: {}\n"
+                        "\t\t\tValid selections: [soads, tunnel_mpc, tunnel_mpc_convergence]".format(str(list(params.keys())[0])))
 
     return scene, robot, controller, x0
-    # # Initialize simulation
-    # N = 100
-    # dt = params['mpc']['dt']
-
-    # q = np.zeros((N, robot.nq))
-    # q[0, :2] = [scene.p0[0], scene.p0[1]]
-    # qg = scene.pg
-    # if robot.nq > 2:
-    #     q[0, 2] = np.arctan2(scene.pg[1]-scene.p0[1], scene.pg[0]-scene.p0[0])
-    #     qg = np.append(qg, [np.arctan2(scene.p0[1]-scene.pg[1], scene.p0[0]-scene.pg[0])])
-    # if robot.nq == 4:
-    #     qg = np.append(qg, 0)
-    # MPC
-    # controller = Controller(mpc_params, target_generator_params, robot)

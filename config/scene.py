@@ -68,9 +68,9 @@ class Scene:
         scene_id += 1
         if id == scene_id:
             self.obstacles = [
-                Polygon([[3, 0], [3, -4], [5, -4], [5, -2], [8, -2], [8, -4], [10, -4], [10, 0]]),
-                # StarshapedPolygon([[3, 0], [3, -4], [5, -4], [5, -2], [8, -2], [8, 0]]),
-                # StarshapedPolygon([[8, 0], [8, -4], [10, -4], [10, 0]]),
+                # Polygon([[3, 0], [3, -4], [5, -4], [5, -2], [8, -2], [8, -4], [10, -4], [10, 0]]),
+                StarshapedPolygon([[3, 0], [3, -4], [5, -4], [5, -2], [8, -2], [8, 0]]),
+                StarshapedPolygon([[8, 0], [8, -4], [10, -4], [10, 0]]),
                 StarshapedPolygon([[6, -3], [6, -7], [7, -7], [7, -3]], motion_model=motion_model.SinusVelocity(pos=[0, -1], x2_mag=0.2))
             ]
             self.p0 = np.array([0, -4])
@@ -112,6 +112,21 @@ class Scene:
             self.pg = np.array([11., -3.])
             self.xlim = [-1, 12]
             self.ylim = [-8, 4]
+
+            # n_pol = 10
+            # t = np.linspace(0, 2 * np.pi, n_pol, endpoint=False)
+            # ell_polygon = np.vstack((1 * np.cos(t), 1 * np.sin(t))).T
+            # ell_polygon2 = np.vstack((0.4 * np.cos(t), 1 * np.sin(t))).T
+            # ell_polygon3 = np.vstack((0.4 * np.cos(t), 0.4 * np.sin(t))).T
+            # self.obstacles += [
+            #     StarshapedPolygon(ell_polygon, is_convex=True, motion_model=motion_model.SinusVelocity(pos=[6, -5], x1_mag=-0.2)),
+            #     StarshapedPolygon(ell_polygon, is_convex=True, motion_model=motion_model.SinusVelocity(pos=[4, -3], x1_mag=-0.5)),
+            #     StarshapedPolygon(ell_polygon, is_convex=True, motion_model=motion_model.SinusVelocity(pos=[7, -1], x1_mag=-0.2)),
+            #     StarshapedPolygon(ell_polygon, is_convex=True, motion_model=motion_model.SinusVelocity(pos=[5, -2], x1_mag=-0.25, x2_mag=-0.2)),
+            #     StarshapedPolygon(ell_polygon, is_convex=True, motion_model=motion_model.SinusVelocity(pos=[1, -5], x1_mag=0.3, x2_mag=0.5)),
+            #     StarshapedPolygon(ell_polygon2, is_convex=True, motion_model=motion_model.SinusVelocity(pos=[8, -3], x2_mag=2, x2_period=5)),
+            #     StarshapedPolygon(ell_polygon3, is_convex=True, motion_model=motion_model.SinusVelocity(pos=[8, -5], x1_mag=0.3, x2_mag=0.5)),
+            #     ]
 
         # Scene 6
         scene_id += 1
@@ -198,8 +213,8 @@ class Scene:
             self.obstacles = [
                 # StarshapedPolygon([[2, 2], [8, 2], [8, 3], [2, 3]]),
                 StarshapedPolygon([[2, 5], [8, 5], [8, 6], [2, 6]]),
-                StarshapedPolygon([[2, -10], [8, -10], [8, 3], [2, 3]]),
-                StarshapedPolygon([[2, 8], [8, 8], [8, 20], [2, 20]]),
+                StarshapedPolygon([[2, 2], [8, 2], [8, 3], [2, 3]]),
+                StarshapedPolygon([[2, 8], [8, 8], [8, 9], [2, 9]]),
                 Ellipse([1.1, 1.1], motion_model=motion_model.Interval([-2, 4], [(13, (10, 4))])),
                 # StarshapedPolygon(Ellipse([1, 1]).polygon(), motion_model=motion_model.Interval([-1, 4], [(9, (10, 4))])),
                 # Ellipse([1, 1], motion_model=motion_model.Interval([-2, 4], [(9, (11, 4))])),
@@ -352,6 +367,122 @@ class Scene:
             self.pg = np.array([5.5, 8])
             self.xlim = [0, 10]
             self.ylim = [0, 10]
+
+        # Scene 16
+        scene_id += 1
+        if id == scene_id:
+            # np.random.seed(2)
+            No = 30
+            ell_radius_mean = 0.5
+            ell_radius_std = 0.2
+            self.xlim = [0, 10]
+            self.ylim = [0, 10]
+
+            def random_scene_point():
+                return np.array([np.random.rand() * (self.xlim[1]-self.xlim[0]) + self.xlim[0],
+                                 np.random.rand() * (self.ylim[1]-self.ylim[0]) + self.ylim[0]])
+
+            self.obstacles = [
+                Ellipse(a=np.random.normal(ell_radius_mean, ell_radius_std, 2)) for _ in range(No)
+            ]
+            [o.set_motion_model(motion_model.Static(random_scene_point())) for o in self.obstacles]
+            self.p0 = random_scene_point()
+            while any([o.interior_point(self.p0) for o in self.obstacles]):
+                self.p0 = random_scene_point()
+            self.pg = random_scene_point()
+            while any([o.interior_point(self.pg) for o in self.obstacles]):
+                self.pg = random_scene_point()
+
+        # Scene 17
+        scene_id += 1
+        if id == scene_id:
+            self.obstacles = [
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([3, 5.7])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([3.5, 4.9])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([3, 4.1])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([7, 5.6])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([8, 4.8])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([4.5, 6.8])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([5.3, 5.4])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([5., 3.6])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([5.3, 2.8])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([7., 6.2])),
+                Ellipse([0.5, 0.5], motion_model=motion_model.Static([5.3, 1.8]))
+            ]
+            self.p0 = np.array([1, 5])
+            self.pg = np.array([9, 5])
+            self.xlim = [0, 10]
+            self.ylim = [0, 10]
+
+        # Scene 18
+        scene_id += 1
+        if id == scene_id:
+            ell_ax = [0.8, 0.8]
+            self.obstacles = [
+                StarshapedPolygon([(7, 5), (6, 5), (6, 3), (7, 3)], is_convex=True),
+                StarshapedPolygon([(6, 3), (6, 7), (5, 7), (5, 3)], is_convex=True),
+                StarshapedPolygon([(7, 1), (8, 1), (8, 5), (7, 5)], is_convex=True),
+                StarshapedPolygon([(6, 7), (6, 8), (4, 8), (4, 7)], is_convex=True),
+                StarshapedPolygon([(2, 6), (3, 6), (3, 10), (2, 10)], is_convex=True),
+                StarshapedPolygon([(3, 9), (3, 10), (6, 10), (6, 9)], is_convex=True),
+                StarshapedPolygon([(8, 6), (9, 6), (9, 10), (8, 10)], is_convex=True),
+                Ellipse(ell_ax, motion_model=motion_model.Static([7.5, 8])),
+                Ellipse(ell_ax, motion_model=motion_model.Static([4.8, 5])),
+                # Ellipse(ell_ax, motion_model=motion_model.Static([4, 8])),
+                # Ellipse(ell_ax, motion_model=motion_model.Static([2.5, 5.5])),
+                Ellipse(ell_ax, motion_model=motion_model.Static([6.5, 1])),
+                # Ellipse(ell_ax, motion_model=motion_model.Interval([2, 3], [(3, (4., 6))])),
+                # Ellipse(ell_ax, motion_model=motion_model.SinusVelocity([4.7, 12], x2_mag=-0.2)),
+            ]
+            self.p0 = np.array([1., 1.])
+            # self.p0 = np.array([1., 3.])
+            # self.p0 = np.array([1., 5.])
+            self.pg = np.array([9., 5.])
+            self.xlim = [-1, 11]
+            self.ylim = [-1, 11]
+            self.theta0 = 0
+
+        # Scene 19
+        scene_id += 1
+        if id == scene_id:
+            ell_ax = [0.8, 0.8]
+            self.obstacles = [
+                StarshapedPolygon([(4, 1), (6, 1), (6, 9), (4, 9)], is_convex=True),
+                StarshapedPolygon([(1, 4), (9, 4), (9, 6), (1, 6)], is_convex=True),
+                Ellipse(ell_ax, motion_model=motion_model.Static([6.3, 0.5])),
+                Ellipse(ell_ax, motion_model=motion_model.Static([1.2, 6.7])),
+                # Ellipse(ell_ax, motion_model=motion_model.Static([1.7, 8])),
+                Ellipse(ell_ax, motion_model=motion_model.Static([6, 0])),
+                Ellipse(ell_ax, motion_model=motion_model.Static([8.6, 6.7])),
+                # Ellipse(ell_ax, motion_model=motion_model.Static([2.5, 5.5])),
+                # Ellipse(ell_ax, motion_model=motion_model.Static([6.5, 1])),
+            ]
+            self.p0 = np.array([3, 7.])
+            self.p0 = np.array([7, 6.5])
+            # self.p0 = np.array([7., 3.])
+            self.pg = np.array([3., 3.])
+            self.xlim = [-2, 10]
+            self.ylim = [-2, 10]
+            self.theta0 = 0
+
+        # Scene 20
+        scene_id += 1
+        if id == scene_id:
+            ell_ax = [0.8, 0.8]
+            self.obstacles = [
+                # StarshapedPolygon([[0, 0], [4, 0], [4, 1], [1, 1], [1, 3], [0, 3]]),
+                StarshapedPolygon([[0, 0], [1, 0], [1, 3], [0, 3]]),
+                StarshapedPolygon([[1, 0], [3, 0], [3, 1], [1, 1]]),
+                StarshapedPolygon([[3, 0], [4, 0], [4, 3], [3, 3]]),
+                # Polygon([[0, 0], [4, 0], [4, 3], [3, 3], [3, 1], [1, 1], [1, 3], [0, 3]]),
+                Ellipse([1, 1], motion_model=motion_model.Static([-0.5, 3.7])),
+                Ellipse([0.5, 1.5], motion_model=motion_model.Static([4, -1.]))
+            ]
+            self.p0 = np.array([0, -2.])
+            self.pg = np.array([2, 2])
+            # self.pg = np.array([4, 4])
+            self.xlim = [-3, 6]
+            self.ylim = [-3, 6]
 
         if not (0 < id < scene_id+1):
                 text = 'Invalid scene id: ' + str(id) + '\n\nScene scenarios\n---------\n'

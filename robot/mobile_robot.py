@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from abc import ABC, abstractmethod
 import numpy as np
 
@@ -43,19 +44,17 @@ class MobileRobot(ABC):
         if ax is None:
             _, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
         if self.width == 0:
-            handles = plt.plot(0, 0, 'o', color=color, alpha=alpha, markersize=markersize, label=self.name)
-        else:
             handles = plt.plot(0, 0, '+', color=color, alpha=alpha, markersize=markersize, label=self.name)
-            # handle = [plt.Circle((0, 0), self.width / 2, color=color, alpha=alpha, label=self.name)]
-            # ax.add_patch(handle[0])
+        else:
+            handles = [patches.Circle((0, 0), self.width / 2, color=color, alpha=alpha, label=self.name)]
+            ax.add_patch(handles[0])
         return handles, ax
 
     def update_plot(self, x, handles):
         if self.width == 0:
             handles[0].set_data(*self.h(x))
         else:
-            handles[0].set_data(*self.h(x))
-            # handles[0].set(center=self.h(q))
+            handles[0].set(center=self.h(x))
 
     def draw(self, x, **kwargs):
         handles, ax = self.init_plot(**kwargs)

@@ -1,0 +1,39 @@
+
+tunnel_mpc_convergence:
+  # Workspace modification
+  rho0: 0.3
+  gamma: 0.5
+  make_convex: 1
+  max_obs_compute_time: 40
+  hull_epsilon: 0.3
+  use_prev_workspace: 1
+  # Target generation
+  convergence_tolerance: 1.e-3
+  max_compute_time: 10
+  crep: 1.2
+  reactivity: 1.
+  buffer: 1
+  # MPC
+  ce: 100.
+  cs: 500.
+  e_penalty: 0
+  dg: 0.2
+  cg: 10000
+  R: [250, 2.5]
+  convergence_margin: 0.02
+  lambda: 0.2
+
+  #-------- MPC Build params --------- #
+  build_mode: 'release'
+  integration_method: 'euler'
+  n_pol: 10
+  N: 5
+  dt: 0.2
+  solver_tol: 1.e-5
+  solver_max_time: 500 # Maximum duration for mpc solver in milliseconds
+  solver_max_inner_iterations: 1000
+  solver_max_outer_iterations: 10
+  solver_initial_tol: 1.e-4
+  solver_delta_tol: 1.e-4
+  solver_weight_update_factor: 10.0
+  solver_initial_penalty: 1000.0

@@ -72,7 +72,7 @@ def on_press(event):
         ax_scene.axis('off')
         ax_scene.title.set_visible(False)
         file_name = input("-------------\nFile name: ")
-        fig_scene.savefig("figures/" + file_name, transparent=True)
+        fig_scene.savefig("utils/" + file_name, transparent=True)
         ax_scene.axis('on')
         ax_scene.title.set_visible(True)
     elif event.key == 'a':
