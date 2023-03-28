@@ -122,11 +122,18 @@ class TunnelMPCGUI(SceneGUI):
             self.emax_handle = self.ax_mpc_solution[1, 0].plot([0, mpc_horizon], [None, None], 'r--')[0]
             self.e_handle = self.ax_mpc_solution[1, 0].plot(np.linspace(0, mpc_horizon, mpc_horizon+1, '-o'), [None] * (mpc_horizon+1), '-o')[0]
             self.ax_mpc_solution[1, 0].set_ylim(0, 1.1*rho0)
+            # Assumes 2 control signals
+            self.u1_handle = self.ax_mpc_solution[0, 1].plot(np.linspace(0, mpc_horizon, mpc_horizon+1), [None] * (mpc_horizon + 1), '-o')[0]
+            self.ax_mpc_solution[0, 1].plot([0, mpc_horizon], [robot.u_min[0], robot.u_min[0]], 'r--')
+            self.ax_mpc_solution[0, 1].plot([0, mpc_horizon], [robot.u_max[0], robot.u_max[0]], 'r--')
+            self.u2_handle = self.ax_mpc_solution[1, 1].plot(np.linspace(0, mpc_horizon, mpc_horizon+1), [None] * (mpc_horizon + 1), '-o')[0]
+            self.ax_mpc_solution[1, 1].plot([0, mpc_horizon], [robot.u_min[1], robot.u_min[1]], 'r--')
+            self.ax_mpc_solution[1, 1].plot([0, mpc_horizon], [robot.u_max[1], robot.u_max[1]], 'r--')
 
         self.update(init_robot_state, goal, 0)
 
     def update(self, robot_state=None, goal=None, time=None, obstacles_star=None, target_path=None, mpc_path=None,
-               s=None, e=None, rho=None, e_max=None, s_kappa=None, timing=None):
+               s=None, u=None, e=None, rho=None, e_max=None, s_kappa=None, timing=None):
         # SceneFig update
         super().update(robot_state, goal, time)
 
@@ -170,3 +177,6 @@ class TunnelMPCGUI(SceneGUI):
                 self.emax_handle.set_ydata([e_max, e_max])
             if rho is not None:
                 self.rho_handle.set_ydata([rho, rho])
+            if u is not None:
+                self.u1_handle.set_ydata(u[::2])
+                self.u2_handle.set_ydata(u[1::2])

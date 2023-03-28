@@ -10,6 +10,7 @@ class TunnelMpcController:
         self.robot = robot
         self.mpc = TunnelMpc(params, robot)
         self.verbosity = verbosity
+        self.reset()
 
     def reset(self):
         self.mpc.reset()

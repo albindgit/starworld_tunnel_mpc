@@ -19,6 +19,7 @@ T_max = 30
 dt = controller.params['dt']
 t = 0.
 x = x0
+u_prev = np.zeros(robot.nu)
 convergence_threshold = 0.05
 converged = False
 timing = {'workspace': [], 'target': [], 'mpc': [], 'tot': []}
@@ -46,10 +47,11 @@ while gui.fig_open and not converged:
         s_kappa = controller.s_kappa if hasattr(controller,'s_kappa') else None
         gui.update(robot_state=x, obstacles_star=controller.obstacles_star, time=t, target_path=controller.target_path,
                    mpc_path=mpc_path, e_max=e_max, timing=controller.timing, e=controller.solution['e'],
-                   s=controller.solution['s'], rho=controller.rho, s_kappa=s_kappa)
+                   s=controller.solution['s'], u=u_prev.tolist() + controller.solution['u'], rho=controller.rho, s_kappa=s_kappa)
 
         # Integrate robot state with new control signal
         x, _ = robot.move(x, u, dt)
+        u_prev = u
         t += dt
 
     converged = np.linalg.norm(robot.h(x)-scene.pg) < convergence_threshold
